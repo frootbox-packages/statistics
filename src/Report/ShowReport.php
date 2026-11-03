@@ -16,7 +16,7 @@ use Frootbox\Core\Action\Schema\Description;
 use Frootbox\Core\Action\Schema\Range;
 use Frootbox\Core\Language\Languages;
 use Frootbox\Core\Page\PageOutline;
-use Frootbox\Core\Url\SubpageSources;
+use Frootbox\Core\Plugin\Plugins;
 use Frootbox\Core\Url\Target;
 use Frootbox\Core\Url\Urls;
 use Frootbox\Statistics\Counting\Hit;
@@ -35,7 +35,7 @@ final readonly class ShowReport implements Query
         public int $days = 30,
     ) {}
 
-    public function handle(Tally $tally, Connection $connection, Urls $urls, PageOutline $outline, SubpageSources $subpages, Languages $languages): Report
+    public function handle(Tally $tally, Connection $connection, Urls $urls, PageOutline $outline, Plugins $subpages, Languages $languages): Report
     {
         $tally->run();
 
