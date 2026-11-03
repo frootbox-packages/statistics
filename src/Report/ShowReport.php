@@ -16,6 +16,7 @@ use Frootbox\Core\Action\Schema\Description;
 use Frootbox\Core\Action\Schema\Range;
 use Frootbox\Core\Language\Languages;
 use Frootbox\Core\Page\PageOutline;
+use Frootbox\Core\Plugin\CategoryPages;
 use Frootbox\Core\Plugin\Plugins;
 use Frootbox\Core\Url\Target;
 use Frootbox\Core\Url\Urls;
@@ -35,7 +36,7 @@ final readonly class ShowReport implements Query
         public int $days = 30,
     ) {}
 
-    public function handle(Tally $tally, Connection $connection, Urls $urls, PageOutline $outline, Plugins $subpages, Languages $languages): Report
+    public function handle(Tally $tally, Connection $connection, Urls $urls, PageOutline $outline, Plugins $subpages, Languages $languages, CategoryPages $categories): Report
     {
         $tally->run();
 
@@ -69,6 +70,7 @@ final readonly class ShowReport implements Query
             $title = match (true) {
                 null === $target => null,
                 $target->isPage() => $outline->title($target->id, [$language, ...$codes]),
+                $target->isCategory() => $categories->title($target, $language),
                 default => $subpages->get($target->type)?->title($target->id, $language),
             };
             $pages[] = new PageCount(self::string($row['target']), $language, $title, null === $target ? null : $urls->href($target, $language), self::int($row['views']), self::int($row['visits']));
