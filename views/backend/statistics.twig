@@ -1,0 +1,97 @@
+{#- The screen "Statistics": visits and page views of a period (decision 0229). -#}
+{% extends '@backend/layout.twig' %}
+{% import '@backend/ui.twig' as ui %}
+
+{% block title %}{{ t('Statistics') }}{% endblock %}
+
+{% macro change(percent) -%}
+    {%- if percent is not null -%}
+        {{ t('{change} compared to the period before', {change: (percent > 0 ? '+' : (percent < 0 ? '−' : '')) ~ ui.number(percent|abs) ~ ' %'}) }}
+    {%- endif -%}
+{%- endmacro %}
+
+{% block content %}
+{%- set labels = {mobile: t('Smartphone'), tablet: t('Tablet'), desktop: t('Computer')} -%}
+<div class="fb-stack fb-stack--lg">
+    <header class="fb-page-header">
+        <div class="fb-page-header__text">
+            <h1 class="fb-heading-1">{{ t('Statistics') }}</h1>
+            <p class="fb-muted">{{ t('How many people visit the website and what they read. Without cookies and without data about single visitors.') }}</p>
+        </div>
+    </header>
+
+    {{ ui.tabs(t('Period'), periods|map(days => {
+        label: t(['Last day', 'Last {count} days'], {count: days}),
+        href: path('frootbox.statistics.statistics') ~ '?days=' ~ days,
+        current: days == report.days,
+    })) }}
+
+    {% if report.views == 0 and report.viewsBefore == 0 %}
+    <section class="fb-card fb-card--padded">
+        {{ ui.empty({icon: 'chart', title: t('No visits yet'), text: t('Visits count from now on. Signed-in users and the editing mode do not count.')}) }}
+    </section>
+    {% else %}
+    {{ ui.figures([
+        {label: t('Visits'), value: ui.number(report.visits), note: _self.change(report.visitsChange())},
+        {label: t('Page views'), value: ui.number(report.views), note: _self.change(report.viewsChange())},
+    ]) }}
+
+    <section class="fb-card fb-card--padded">
+        {{ ui.chart({label: t('Visits per day'), items: report.perDay|map(day => {label: day.day|date(t('Y-m-d')), value: day.visits})}) }}
+    </section>
+
+    <section class="fb-card" aria-labelledby="statistics-pages-title">
+        <div class="fb-card__header"><h2 class="fb-heading-4" id="statistics-pages-title">{{ t('Most visited pages') }}</h2></div>
+        {% if report.pages is empty %}
+        <p class="fb-card__body fb-muted">{{ t('No page views in this period.') }}</p>
+        {% else %}
+        {%- set most = (report.pages|first).views -%}
+        {%- set several = report.pages|map(page => page.language)|reduce((codes, code) => code in codes ? codes : codes|merge([code]), [])|length > 1 -%}
+        <ul>
+            {%- for page in report.pages %}
+            <li class="fb-list__item">
+                <span class="fb-list__main">
+                    <span class="fb-list__title">{{ page.title ?? t('Removed') }}</span>
+                    <span class="fb-list__meta">{{ page.url ?? page.target }}{% if several %} · {{ page.language|upper }}{% endif %}</span>
+                </span>
+                {{ ui.share(page.views, most) }}
+            </li>
+            {%- endfor %}
+        </ul>
+        {% endif %}
+    </section>
+
+    <div class="fb-split">
+        <section class="fb-card fb-split__side" aria-labelledby="statistics-sources-title">
+            <div class="fb-card__header"><h2 class="fb-heading-4" id="statistics-sources-title">{{ t('Where visitors come from') }}</h2></div>
+            {% if report.sources is empty %}
+            <p class="fb-card__body fb-muted">{{ t('No visits in this period.') }}</p>
+            {% else %}
+            {%- set most = (report.sources|first).visits -%}
+            <ul>
+                {%- for source in report.sources %}
+                <li class="fb-list__item">
+                    <span class="fb-list__main"><span class="fb-list__title">{{ source.source == '' ? t('Direct or unknown') : (source.source == '*' ? t('Other sources') : source.source) }}</span></span>
+                    {{ ui.share(source.visits, most) }}
+                </li>
+                {%- endfor %}
+            </ul>
+            {% endif %}
+        </section>
+
+        <section class="fb-card fb-split__side" aria-labelledby="statistics-devices-title">
+            <div class="fb-card__header"><h2 class="fb-heading-4" id="statistics-devices-title">{{ t('Devices') }}</h2></div>
+            {%- set most = max(report.devices|map(device => device.visits)) -%}
+            <ul>
+                {%- for device in report.devices %}
+                <li class="fb-list__item">
+                    <span class="fb-list__main"><span class="fb-list__title">{{ labels[device.device] }}</span></span>
+                    {{ ui.share(device.visits, most) }}
+                </li>
+                {%- endfor %}
+            </ul>
+        </section>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

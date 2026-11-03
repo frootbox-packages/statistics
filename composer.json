@@ -1,0 +1,42 @@
+{
+    "name": "frootbox/statistics",
+    "description": "Statistics for the Frootbox CMS: visits and page views without cookies or personal data, the most visited pages, sources and devices",
+    "type": "frootbox-extension",
+    "license": "MIT",
+    "keywords": [
+        "cms",
+        "frootbox",
+        "statistics",
+        "analytics",
+        "privacy"
+    ],
+    "require": {
+        "php": ">=8.5",
+        "doctrine/dbal": "^4.5",
+        "frootbox/core": "^0.1",
+        "frootbox/database": "^0.1",
+        "frootbox/rich-text": "^0.1",
+        "psr/http-message": "^2.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/log": "^3.0"
+    },
+    "suggest": {
+        "frootbox/backend": "The screen with the statistics"
+    },
+    "autoload": {
+        "psr-4": {
+            "Frootbox\\Statistics\\": "src/",
+            "Frootbox\\Statistics\\Migrations\\": "migrations/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Frootbox\\Statistics\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        }
+    }
+}
