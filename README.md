@@ -30,3 +30,9 @@ address count. A day's file stops growing at 20 MB.
 `frootbox/statistics/report.show` with `days` (1 to 366, default 30)
 returns the report, also over the REST API. The role "editor" gets
 `frootbox/statistics/*` on installation.
+
+## Source and issues
+
+This package is developed in the [Frootbox monorepo](https://github.com/Frootbox/frootbox)
+and mirrored here read-only. Questions, bugs and ideas go there, see the
+[documentation](https://github.com/Frootbox/frootbox/tree/main/documentation).
