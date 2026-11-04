@@ -10,6 +10,12 @@
         "analytics",
         "privacy"
     ],
+    "homepage": "https://github.com/Frootbox/frootbox/tree/main/packages/modules/statistics",
+    "support": {
+        "issues": "https://github.com/Frootbox/frootbox/issues",
+        "source": "https://github.com/frootbox-packages/statistics",
+        "docs": "https://github.com/Frootbox/frootbox/tree/main/documentation"
+    },
     "require": {
         "php": ">=8.5",
         "doctrine/dbal": "^4.5",
